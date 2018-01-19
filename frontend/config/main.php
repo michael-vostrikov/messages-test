@@ -38,6 +38,13 @@ return [
             'rules' => [
             ],
         ],
+        'view' => [
+            'theme' => [
+                'pathMap' => [
+                    '@dektrium/user/views' => '@app/modules/user/views',
+                ],
+            ],
+        ],
     ],
     'modules' => [
         'user' => [
@@ -50,6 +57,9 @@ return [
             'enableGeneratingPassword' => false,
             'confirmWithin' => 6 * 3600,
             'admins' => ['admin'],
+            'modelMap' => [
+                'RegistrationForm' => 'frontend\modules\user\models\RegistrationForm',
+            ],
         ],
     ],
     'params' => $params,
