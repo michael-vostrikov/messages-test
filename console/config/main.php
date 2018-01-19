@@ -22,7 +22,7 @@ return [
         ],
         'migrate' => [
             'class' => 'yii\console\controllers\MigrateController',
-            'migrationPath' => ['@app/migrations', '@vendor/dektrium/yii2-user/migrations'],
+            'migrationPath' => ['@app/migrations', '@vendor/dektrium/yii2-user/migrations', '@yii/web/migrations'],
         ],
     ],
     'components' => [

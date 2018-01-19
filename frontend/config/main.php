@@ -16,6 +16,7 @@ return [
             'csrfParam' => '_csrf-frontend',
         ],
         'session' => [
+            'class' => 'yii\web\DbSession',
             // this is the name of the session cookie used for login on the frontend
             'name' => 'advanced-frontend',
         ],
