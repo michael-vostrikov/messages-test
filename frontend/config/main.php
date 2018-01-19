@@ -41,7 +41,7 @@ return [
         'view' => [
             'theme' => [
                 'pathMap' => [
-                    '@dektrium/user/views' => '@app/modules/user/views',
+                    '@dektrium/user/views' => '@frontend/modules/user/views',
                 ],
             ],
         ],
@@ -59,6 +59,7 @@ return [
             'admins' => ['admin'],
             'modelMap' => [
                 'RegistrationForm' => 'frontend\modules\user\models\RegistrationForm',
+                'Profile' => 'common\models\Profile',
             ],
         ],
     ],
