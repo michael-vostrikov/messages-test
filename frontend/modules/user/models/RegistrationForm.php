@@ -38,6 +38,7 @@ class RegistrationForm extends Model
      * @var string Password
      */
     public $password;
+    public $password_repeat;
 
     /**
      * @inheritdoc
@@ -69,8 +70,9 @@ class RegistrationForm extends Model
                 'message' => Yii::t('user', 'This email address has already been taken')
             ],
             // password rules
-            'passwordRequired' => ['password', 'required', 'skipOnEmpty' => $this->module->enableGeneratingPassword],
-            'passwordLength'   => ['password', 'string', 'min' => 6, 'max' => 72],
+            'passwordRequired' => [['password', 'password_repeat'], 'required', 'skipOnEmpty' => $this->module->enableGeneratingPassword],
+            'passwordLength'   => [['password', 'password_repeat'], 'string', 'min' => 6, 'max' => 72],
+            'comparePasswords' => ['password', 'compare', 'compareAttribute' => 'password_repeat'],
         ];
     }
 
@@ -83,6 +85,7 @@ class RegistrationForm extends Model
             'email'    => Yii::t('user', 'Email'),
             'username' => Yii::t('user', 'Username'),
             'password' => Yii::t('user', 'Password'),
+            'password_repeat' => Yii::t('user', 'Repeat Password'),
         ];
     }
 
