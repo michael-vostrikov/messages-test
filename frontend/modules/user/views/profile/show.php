@@ -16,11 +16,24 @@ $currentUser = Yii::$app->user->identity;
 $this->title = (empty($profile->name) ? $profileUser->username : $profile->name);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Profiles'), 'url' => ['/profile/index']];
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="row">
     <div class="col-sm-4">
-        <h4><?= Html::encode($this->title) ?></h4>
+        <h4>
+            <?= Html::encode($this->title) ?>
+        </h4>
+
+        <p>
+            <?php if (Yii::$app->onlineManager->isOnline($profileUser)) { ?>
+                <?= Html::a(Yii::t('app', 'Online'), null, ['class' => 'label label-success']) ?>
+            <?php } else { ?>
+                <?= Html::a(Yii::t('app', 'Offline'), null, ['class' => 'label label-default']) ?>
+            <?php } ?>
+        </p>
+
         <ul style="padding: 0; list-style: none outside none;">
+
             <?php if (!empty($profile->status)) { ?>
                 <li>
                     <?= Yii::t('app', 'Status:') ?>

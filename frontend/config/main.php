@@ -9,7 +9,7 @@ $params = array_merge(
 return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'frontend\controllers\AppBootstrap'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
@@ -49,6 +49,9 @@ return [
                 ],
             ],
         ],
+        'onlineManager' => [
+            'class' => 'common\components\OnlineManager',
+        ],
     ],
     'modules' => [
         'user' => [
@@ -66,6 +69,9 @@ return [
                 'Profile' => 'common\models\Profile',
                 'User' => 'common\models\User',
             ],
+            'on afterLogin' => function($event) {
+                echo 1; die;
+            }
         ],
     ],
     'params' => $params,
