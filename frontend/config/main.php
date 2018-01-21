@@ -60,6 +60,7 @@ return [
             'modelMap' => [
                 'RegistrationForm' => 'frontend\modules\user\models\RegistrationForm',
                 'Profile' => 'common\models\Profile',
+                'User' => 'common\models\User',
             ],
         ],
     ],

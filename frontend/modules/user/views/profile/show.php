@@ -18,6 +18,7 @@ use yii\helpers\Url;
  */
 
 $this->title = (empty($profile->name) ? $profile->user->username : $profile->name);
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Profiles'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">
