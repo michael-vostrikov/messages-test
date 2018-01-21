@@ -65,4 +65,15 @@ class Profile extends BaseProfile
     {
         return ActiveRecord::beforeSave($insert);
     }
+
+    /**
+     * If user is owner of this profile
+     *
+     * @param User|null $user
+     * @return bool
+     */
+    public function isOwner(User $user)
+    {
+        return ($this->user_id == $user->id);
+    }
 }

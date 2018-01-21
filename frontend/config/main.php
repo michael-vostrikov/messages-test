@@ -38,6 +38,10 @@ return [
             'rules' => [
             ],
         ],
+        'formatter' => [
+            'dateFormat' => 'php:d-m-Y',
+            'datetimeFormat' => 'php:d-m-Y H:i:s',
+        ],
         'view' => [
             'theme' => [
                 'pathMap' => [
