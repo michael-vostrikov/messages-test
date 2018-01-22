@@ -117,15 +117,34 @@ class MessageController extends Controller
     /**
      * Deletes an existing MessageHistoryRecord model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
+     * @param integer $record_id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete($record_id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($record_id);
+        $owner = Yii::$app->user->identity;
 
-        return $this->redirect(['index']);
+        if ($model->contact->owner_id != $owner->id) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
+
+        $transaction = Yii::$app->db->beginTransaction();
+
+        $message = $model->message;
+        $model->delete();
+        if ($message->getMessageHistoryRecords()->count() == 0) {
+            $message->delete();
+        }
+
+        $transaction->commit();
+
+        if (Yii::$app->request->isAjax) {
+            return $this->asJson(['success' => true]);
+        }
+
+        return $this->redirect(['history', 'user_id' => $model->contact->user_id]);
     }
 
     /**

@@ -17,4 +17,18 @@ $(document).ready(function() {
             $('.load-more-container').after(data.html);
         });
     });
+
+
+    $('body').on('click', '.message .close', function() {
+        var $e = $(this);
+        if (!confirm($e.data('confirm'))) {
+            return;
+        }
+
+        $.post($e.data('url')).then(function(data) {
+            $e.closest('.message').replaceWith('');
+        }).fail(function(){
+            console.log('Delete message error');
+        });
+    });
 });
