@@ -118,3 +118,57 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+/* ------------------------------ */
+
+.message-container {
+    padding: 0px 20px;
+    height: 320px;
+    overflow: auto;
+}
+
+.message-container .message {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-bottom: 4px;
+    padding: 4px;
+    background: none;
+    margin-left: 0px;
+    margin-right: -20px;
+}
+
+.message-container .message.own-message {
+    background: #eee;
+    margin-left: -20px;
+    margin-right: 0px;
+}
+
+.message-container .message .message-header {
+    float: right;
+    text-align: right;
+    width: 30%;
+}
+
+.message-container .message .message-header .message-sender {
+    display: inline-block;
+    color: #aaa;
+}
+
+.message-container .message .message-header .message-time {
+    display: inline-block;
+    font-size: 8px;
+    color: #aaa;
+}
+
+.message-container .message .message-body {
+    padding-right: 30%;
+}
+
+
+.message-history .message-form {
+    margin-top: 30px;
+}
+
+.message-history .dialog-title {
+    margin-bottom: 20px;
+}

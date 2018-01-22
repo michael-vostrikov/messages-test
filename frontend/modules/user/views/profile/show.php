@@ -40,6 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= Html::encode($profile->status) ?>
                 </li>
             <?php } ?>
+
             <li>
                 <br>
                 <?= Yii::t('app', 'Email:') ?>
@@ -68,6 +69,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             'closeButton' => false,
                             'options' => ['class' => 'alert-success'],
                     ]) ?>
+
+                    <?= Html::a(Yii::t('app', 'Send message'), ['/message/history', 'user_id' => $profileUser->id], ['class' => 'btn btn-primary']) ?>
                 </p>
             <?php } elseif ($profileUser->hasRequestFrom($currentUser)) { ?>
                 <p>
@@ -115,9 +118,21 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 'name',
                 'profile.status',
-                ['class' => 'yii\grid\ActionColumn', 'template' => '{delete}', 'urlCreator' => function ($action, $model) {
-                    return ['/contact-request/delete-contact', 'user_id' => $model->id];
+                ['label' => '', 'format' => 'raw', 'value' => function ($model) {
+                    $html = Html::a(
+                        Yii::t('app', 'Send message'),
+                        ['/message/history', 'user_id' => $model->id],
+                        ['class' => 'btn btn-success btn-xs']
+                    );
+                    return $html;
                 }],
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{delete}',
+                    'urlCreator' => function ($action, $model) {
+                        return ['/contact-request/delete-contact', 'user_id' => $model->id];
+                    },
+                ],
             ],
         ]) ?>
 

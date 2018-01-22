@@ -13,6 +13,7 @@ use Yii;
  *
  * @property User $owner
  * @property User $user
+ * @property MessageHistoryRecords[] $messageHistoryRecords
  */
 class Contact extends \yii\db\ActiveRecord
 {
@@ -63,5 +64,16 @@ class Contact extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMessageHistoryRecords()
+    {
+        return $this->hasMany(MessageHistoryRecord::className(), ['contact_id' => 'id'])
+            ->joinWith('message')
+            ->orderBy(['{{message_history}}.id' => SORT_DESC])
+        ;
     }
 }
