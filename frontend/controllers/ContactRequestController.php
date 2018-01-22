@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use common\components\UnitOfWork\UnitOfWork;
 
 /**
  * ContactRequestController implements the actions for ContactRequest models.
@@ -62,7 +63,6 @@ class ContactRequestController extends Controller
             return $this->redirect(['user/profile/show', 'id' => $user->id]);
         }
 
-
         $contactRequest = new ContactRequest();
         $contactRequest->from_user_id = $from_user_id;
         $contactRequest->to_user_id = $user->id;
@@ -82,21 +82,20 @@ class ContactRequestController extends Controller
         $user = $this->findUserModel($from_user_id);
         $contactRequest = $this->findModel($from_user_id, $to_user_id);
 
-        $transaction = Yii::$app->db->beginTransaction();
+        $uow = new UnitOfWork(Yii::$app->db);
 
         $contact = new Contact();
         $contact->owner_id = $to_user_id;
         $contact->user_id = $from_user_id;
-        $contact->save();
+        $uow->registerNew($contact);
 
         $contact = new Contact();
         $contact->owner_id = $from_user_id;
         $contact->user_id = $to_user_id;
-        $contact->save();
+        $uow->registerNew($contact);
 
-        $contactRequest->delete();
-
-        $transaction->commit();
+        $uow->registerDeleted($contactRequest);
+        $uow->commit();
 
         return $this->redirect(['user/profile/show', 'id' => $to_user_id]);
     }
@@ -125,19 +124,19 @@ class ContactRequestController extends Controller
     {
         $owner_id = Yii::$app->user->identity->id;
 
-        $transaction = Yii::$app->db->beginTransaction();
+        $uow = new UnitOfWork(Yii::$app->db);
 
         $contact = Contact::findOne(['owner_id' => $owner_id, 'user_id' => $user_id]);
         if ($contact) {
-            $contact->delete();
+            $uow->registerDeleted($contact);
         }
 
         $contact = Contact::findOne(['owner_id' => $user_id, 'user_id' => $owner_id]);
         if ($contact) {
-            $contact->delete();
+            $uow->registerDeleted($contact);
         }
 
-        $transaction->commit();
+        $uow->commit();
 
         return $this->redirect(['user/profile/show', 'id' => $owner_id]);
     }

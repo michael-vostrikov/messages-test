@@ -12,6 +12,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
+use common\components\UnitOfWork\UnitOfWork;
 
 /**
  * MessageController implements the actions for messages.
@@ -95,28 +96,26 @@ class MessageController extends Controller
         $ownerContactModel = $this->findContactModel($owner->id, $user_id);
         $userContactModel = $this->findContactModel($user_id, $owner->id);
 
-        $transaction = Yii::$app->db->beginTransaction();
+        $uow = new UnitOfWork(Yii::$app->db);
 
         $message = new Message();
         $message->load(Yii::$app->request->post());
         $message->sender_id = $owner->id;
-        $saved = $message->save();
-        if ($saved) {
-            $ownerHistoryRecord = new MessageHistoryRecord();
-            $ownerHistoryRecord->contact_id = $ownerContactModel->id;
-            $ownerHistoryRecord->message_id = $message->id;
-            $ownerHistoryRecord->is_unread = 0;
-            $saved = $saved && $ownerHistoryRecord->save();
+        $uow->registerNew($message);
 
-            $userHistoryRecord = new MessageHistoryRecord();
-            $userHistoryRecord->contact_id = $userContactModel->id;
-            $userHistoryRecord->message_id = $message->id;
-            $userHistoryRecord->is_unread = 1;
-            $saved = $saved && $userHistoryRecord->save();
-        }
+        $ownerHistoryRecord = new MessageHistoryRecord();
+        $ownerHistoryRecord->is_unread = 0;
+        $uow->registerNew($ownerHistoryRecord);
+        $uow->registerRelation($ownerHistoryRecord, 'contact_id', $ownerContactModel, 'id');
+        $uow->registerRelation($ownerHistoryRecord, 'message_id', $message, 'id');
 
-        $transaction->commit();
+        $userHistoryRecord = new MessageHistoryRecord();
+        $userHistoryRecord->is_unread = 1;
+        $uow->registerNew($userHistoryRecord);
+        $uow->registerRelation($userHistoryRecord, 'contact_id', $userContactModel, 'id');
+        $uow->registerRelation($userHistoryRecord, 'message_id', $message, 'id');
 
+        $saved = $uow->commit();
 
         if (Yii::$app->request->isAjax) {
             if ($saved) {
@@ -147,15 +146,15 @@ class MessageController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
 
-        $transaction = Yii::$app->db->beginTransaction();
+        $uow = new UnitOfWork(Yii::$app->db);
 
         $message = $model->message;
-        $model->delete();
-        if ($message->getMessageHistoryRecords()->count() == 0) {
-            $message->delete();
+        $uow->registerDeleted($model);
+        if ($message->getMessageHistoryRecords()->count() == 1) {
+            $uow->registerDeleted($message);
         }
 
-        $transaction->commit();
+        $uow->commit();
 
         if (Yii::$app->request->isAjax) {
             return $this->asJson(['success' => true]);
