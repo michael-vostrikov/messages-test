@@ -54,4 +54,8 @@ $(document).ready(function() {
             $('.field-message-text input, .field-message-text button').removeAttr('disabled');
         });
     });
+
+    $('.is-unread').one('mouseover', function() {
+        $(this).removeClass('is-unread');
+    });
 });

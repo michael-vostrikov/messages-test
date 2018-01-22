@@ -113,15 +113,28 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= GridView::widget([
             'dataProvider' => new ActiveDataProvider([
-                'query' => $profileUser->getContactUsers(),
+                'query' => $profileUser->getContacts(),
             ]),
             'columns' => [
-                'name',
-                'profile.status',
+                ['attribute' => 'user.name', 'format' => 'raw', 'value' => function ($model) {
+                    $html = '';
+                    if (Yii::$app->onlineManager->isOnline($model->user)) {
+                        $html .= Html::a(Yii::t('app', 'Online'), null, ['class' => 'label label-success']);
+                    } else {
+                        $html .= Html::a(Yii::t('app', 'Offline'), null, ['class' => 'label label-default']);
+                    }
+
+                    $html .= '&nbsp;&nbsp;';
+                    $html .= Html::encode($model->user->name);
+
+                    return $html;
+                }],
+                'user.profile.status',
+                'unreadCount',
                 ['label' => '', 'format' => 'raw', 'value' => function ($model) {
                     $html = Html::a(
                         Yii::t('app', 'Send message'),
-                        ['/message/history', 'user_id' => $model->id],
+                        ['/message/history', 'user_id' => $model->user->id],
                         ['class' => 'btn btn-success btn-xs']
                     );
                     return $html;
@@ -130,7 +143,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{delete}',
                     'urlCreator' => function ($action, $model) {
-                        return ['/contact-request/delete-contact', 'user_id' => $model->id];
+                        return ['/contact-request/delete-contact', 'user_id' => $model->user->id];
                     },
                 ],
             ],

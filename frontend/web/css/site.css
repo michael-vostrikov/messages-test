@@ -122,7 +122,7 @@ a.desc:after {
 /* ------------------------------ */
 
 .message-container {
-    padding: 0px 20px;
+    padding: 0px 22px;
     height: 320px;
     overflow: auto;
 }
@@ -141,6 +141,11 @@ a.desc:after {
     background: #eee;
     margin-left: -20px;
     margin-right: 0px;
+}
+
+.message-container .message.is-unread {
+    box-shadow: inset 0px 0px 0px 1px #66afe9;
+    border: 1px solid #66afe9;
 }
 
 .message-container .message .message-header {

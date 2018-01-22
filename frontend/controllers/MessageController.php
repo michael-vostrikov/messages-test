@@ -11,6 +11,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 
 /**
  * MessageController implements the actions for messages.
@@ -60,6 +61,8 @@ class MessageController extends Controller
         }
         $messageHistory = $query->all();
 
+        MessageHistoryRecord::updateAll(['is_unread' => 0], ['in', 'id', ArrayHelper::getColumn($messageHistory, 'id')]);
+
         if (Yii::$app->request->isAjax) {
             ob_start();
             $messageHistory = array_reverse($messageHistory);
@@ -102,11 +105,13 @@ class MessageController extends Controller
             $ownerHistoryRecord = new MessageHistoryRecord();
             $ownerHistoryRecord->contact_id = $ownerContactModel->id;
             $ownerHistoryRecord->message_id = $message->id;
+            $ownerHistoryRecord->is_unread = 0;
             $saved = $saved && $ownerHistoryRecord->save();
 
             $userHistoryRecord = new MessageHistoryRecord();
             $userHistoryRecord->contact_id = $userContactModel->id;
             $userHistoryRecord->message_id = $message->id;
+            $userHistoryRecord->is_unread = 1;
             $saved = $saved && $userHistoryRecord->save();
         }
 

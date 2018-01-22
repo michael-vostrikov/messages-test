@@ -14,6 +14,7 @@ use Yii;
  * @property User $owner
  * @property User $user
  * @property MessageHistoryRecords[] $messageHistoryRecords
+ * @property int $unreadCount
  */
 class Contact extends \yii\db\ActiveRecord
 {
@@ -47,6 +48,10 @@ class Contact extends \yii\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'owner_id' => Yii::t('app', 'Owner ID'),
             'user_id' => Yii::t('app', 'User ID'),
+
+            'user.name' => Yii::t('app', 'User'),
+            'user.profile.status' => Yii::t('app', 'Status'),
+            'unreadCount' => Yii::t('app', 'Unread Count'),
         ];
     }
 
@@ -75,5 +80,13 @@ class Contact extends \yii\db\ActiveRecord
             ->joinWith('message')
             ->orderBy(['{{message_history}}.id' => SORT_DESC])
         ;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUnreadCount()
+    {
+        return $this->getMessageHistoryRecords()->andWhere(['is_unread' => 1])->count();
     }
 }
