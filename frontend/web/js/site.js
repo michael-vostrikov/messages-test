@@ -1,6 +1,11 @@
 $(document).ready(function() {
+    function scrollToBottom($el)
+    {
+        $el.scrollTop($el.prop('scrollHeight'));
+    }
+
     $(".autoscroll-to-bottom").each(function(index, el) {
-        $(el).scrollTop($(el).prop("scrollHeight"));
+        scrollToBottom($(el));
     });
 
     $('.history-load-more-btn').click(function(event){
@@ -29,6 +34,24 @@ $(document).ready(function() {
             $e.closest('.message').replaceWith('');
         }).fail(function(){
             console.log('Delete message error');
+        });
+    });
+
+    $('.message-form form').submit(function(event) {
+        event.preventDefault();
+
+        var data = $(this).serialize();
+        var url = $(this).attr('action');
+        $('.field-message-text input, .field-message-text button').attr('disabled', 'disabled');
+
+        $.post(url, data).then(function(data) {
+            var $container = $('.message-container');
+            $container.append(data.message);
+            scrollToBottom($container);
+
+            $('.field-message-text input').val('');
+        }).always(function() {
+            $('.field-message-text input, .field-message-text button').removeAttr('disabled');
         });
     });
 });

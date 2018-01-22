@@ -97,21 +97,33 @@ class MessageController extends Controller
         $message = new Message();
         $message->load(Yii::$app->request->post());
         $message->sender_id = $owner->id;
-        $message->save();
+        $saved = $message->save();
+        if ($saved) {
+            $ownerHistoryRecord = new MessageHistoryRecord();
+            $ownerHistoryRecord->contact_id = $ownerContactModel->id;
+            $ownerHistoryRecord->message_id = $message->id;
+            $saved = $saved && $ownerHistoryRecord->save();
 
-        $ownerHistoryRecord = new MessageHistoryRecord();
-        $ownerHistoryRecord->contact_id = $ownerContactModel->id;
-        $ownerHistoryRecord->message_id = $message->id;
-        $ownerHistoryRecord->save();
-
-        $userHistoryRecord = new MessageHistoryRecord();
-        $userHistoryRecord->contact_id = $userContactModel->id;
-        $userHistoryRecord->message_id = $message->id;
-        $userHistoryRecord->save();
+            $userHistoryRecord = new MessageHistoryRecord();
+            $userHistoryRecord->contact_id = $userContactModel->id;
+            $userHistoryRecord->message_id = $message->id;
+            $saved = $saved && $userHistoryRecord->save();
+        }
 
         $transaction->commit();
 
-        return $this->redirect(['history', 'user_id' => $ownerContactModel->user_id]);
+
+        if (Yii::$app->request->isAjax) {
+            if ($saved) {
+                $html = $this->renderPartial('_message', ['record' => $ownerHistoryRecord]);
+                return $this->asJson(['message' => $html]);
+            }
+
+            $errors = array_merge($message->getErrors(), $ownerHistoryRecord->getErrors(), $userHistoryRecord->getErrors());
+            return $this->asJson(['errors' => $errors])->setStatusCode(400);
+        } else {
+            return $this->redirect(['history', 'user_id' => $ownerContactModel->user_id]);
+        }
     }
 
     /**
